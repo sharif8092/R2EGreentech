@@ -81,12 +81,14 @@ const About: React.FC = () => {
                   <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden mb-6 md:mb-8 border-4 border-slate-50 group-hover:border-emerald-100/50 group-hover:scale-105 transition-all duration-700 shadow-xl relative">
                     {/* Grayscale to Color Transition */}
                     <div className="absolute inset-0 bg-emerald-500/10 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"></div>
+                    
                     <img 
                       src={p.image} 
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
+                      className="w-full  object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
                       alt={p.name} 
                       loading="lazy" 
                     />
+
                   </div>
                   <p className="text-center text-slate-600 text-sm leading-relaxed mb-6 md:mb-8 font-medium group-hover:text-slate-800 transition-colors">
                     {p.bio}

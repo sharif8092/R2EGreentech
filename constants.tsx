@@ -118,9 +118,9 @@ export const CORE_VERTICALS = [
   }
 ];
 
-export const AKHILESH_IMAGE = "input_file_0.png";
-export const JEET_IMAGE = "input_file_1.png";
-export const KASHIF_IMAGE = "input_file_3.png";
+export const AKHILESH_IMAGE = "/public/input_file_2.jpg"; //akhilesh-dubey.png
+export const JEET_IMAGE = "/public/input_file_1.jpg";    //jeet-sarma.png
+export const KASHIF_IMAGE = "/public/input_file_3.jpg";  //kashif-kamran.png
 
 export const PROMOTERS = [
   {
@@ -129,6 +129,7 @@ export const PROMOTERS = [
     bio: '30+ Years of Experience in Quality Engg Solutions, HVAC products and applications, manufacturing and process design, Solar thermal projects.',
     image: AKHILESH_IMAGE,
     specialties: ['Quality Engineering', 'Manufacturing Process', 'Solar Thermal']
+    
   },
   {
     name: 'Jeet Sarma',
@@ -181,7 +182,7 @@ export const INDUSTRIES = [
     id: 'pharma',
     name: 'Pharmaceuticals',
     icon: <Stethoscope className="w-8 h-8" />,
-    image: 'https://images.unsplash.com/photo-1587854692152-cbe660dbbb88?auto=format&fit=crop&q=80&w=1200',
+    image: '/pharma.png',
     description: 'Precision climate control and high-purity environment engineering for sterile manufacturing.',
     solutions: [
       { vertical: 'HVAC', title: 'Cleanroom HVAC & Process Cooling', detail: 'Class 100/1000 compliance with strict humidity/temp stability.' },
@@ -205,7 +206,7 @@ export const INDUSTRIES = [
     id: 'datacenters',
     name: 'Data Centers',
     icon: <Database className="w-8 h-8" />,
-    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc48?auto=format&fit=crop&q=80&w=1200',
+    image: '/datacentre.png',
     description: 'Optimizing PUE and managing the critical lifecycle of high-density battery assets.',
     solutions: [
       { vertical: 'HVAC', title: 'Advanced Thermal Management', detail: 'Precision cooling retrofits and energy-efficiency monitoring.' },
@@ -217,7 +218,7 @@ export const INDUSTRIES = [
     id: 'oems',
     name: 'OEM Brands',
     icon: <Cpu className="w-8 h-8" />,
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1200',
+    image: '/OEM.png',
     description: 'Complete EPR sovereignty and vendor quality engineering for global durable brands.',
     solutions: [
       { vertical: 'E-Waste', title: 'EPR Compliance & Reverse Logistics', detail: 'End-to-end take-back programs and regulatory reporting.' },
