@@ -1,27 +1,79 @@
 
-import React, { useEffect } from 'react';
-import { Download as DownloadIcon, FileText, CheckCircle, Quote, ShieldCheck, ArrowRight } from 'lucide-react';
-import { JEET_IMAGE } from '../constants';
+import React, { useEffect, useState } from 'react';
+import { Download as DownloadIcon, FileText, CheckCircle, Quote, ShieldCheck, ArrowRight, AlertCircle } from 'lucide-react';
+import { PROMOTERS } from '../constants';
 
 const Download: React.FC = () => {
+  const [team, setTeam] = useState(PROMOTERS);
+  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+  
+  // Document State
+  const [profileDoc, setProfileDoc] = useState<{name: string, content: string, size: string} | null>(null);
+
   useEffect(() => {
     document.title = "Download Corporate Profile | R2E Greentech";
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.setAttribute("content", "Access the official R2E Greentech Corporate Capability Document.");
+
+    // Load dynamic team data
+    const storedTeam = localStorage.getItem('r2e_promoters');
+    if (storedTeam) {
+      setTeam(JSON.parse(storedTeam));
+    }
+
+    // Load dynamic document
+    const storedDocs = localStorage.getItem('r2e_documents');
+    if (storedDocs) {
+      const docs = JSON.parse(storedDocs);
+      // Find active document for Corporate Profile
+      const activeProfile = docs.find((d: any) => 
+        d.active && 
+        (d.location.includes('Corporate Profile') || d.location.includes('Download Page'))
+      );
+      
+      if (activeProfile && activeProfile.content) {
+        setProfileDoc({
+          name: activeProfile.name,
+          content: activeProfile.content,
+          size: activeProfile.size
+        });
+      }
+    }
   }, []);
 
+  // Auto-rotate quotes
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentQuoteIndex((prev) => (prev + 1) % team.length);
+    }, 5000); // 5 seconds rotation
+    return () => clearInterval(timer);
+  }, [team.length]);
+
   const handleDownload = () => {
-    const content = "R2E Greentech Pvt. Ltd. - Corporate Profile\nEngineering Clean Energy | Enabling Circular Industry";
-    const blob = new Blob([content], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'R2E_Greentech_Corporate_Profile.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    if (profileDoc) {
+      // Use uploaded file
+      const link = document.createElement('a');
+      link.href = profileDoc.content;
+      link.download = profileDoc.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      // Fallback
+      const content = "R2E Greentech Pvt. Ltd. - Corporate Profile\nEngineering Clean Energy | Enabling Circular Industry";
+      const blob = new Blob([content], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'R2E_Greentech_Corporate_Profile.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
   };
+
+  const currentPromoter = team[currentQuoteIndex];
 
   return (
     <div className="pt-20 pb-16 bg-slate-50 min-h-screen">
@@ -47,21 +99,44 @@ const Download: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 md:gap-16 items-center">
             
-            {/* Quote Card with Enhanced Hover */}
+            {/* Quote Card with Slider Logic */}
             <div className="relative group order-2 lg:order-1">
-              <div className="relative bg-white p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-slate-100 flex flex-col items-center text-center transition-all duration-500 group-hover:shadow-[0_40px_80px_-20px_rgba(16,185,129,0.2)] group-hover:border-emerald-500/20 group-hover:-translate-y-2 transform-gpu">
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-28 h-28 md:w-36 md:h-36 rounded-3xl overflow-hidden border-4 border-white shadow-lg group-hover:scale-110 transition-transform duration-500 group-hover:border-emerald-200 z-10">
-                  <img src={JEET_IMAGE} alt="Jeet Sarma" className="w-full h-full object-cover" />
+              <div className="relative bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl border-4 border-emerald-500/10 flex flex-col items-center text-center transition-all duration-500 group-hover:shadow-[0_40px_80px_-20px_rgba(16,185,129,0.2)] transform-gpu">
+                
+                {/* Image Container with Green Rounded Border */}
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 p-2 bg-emerald-200 rounded-[2rem] shadow-xl">
+                   <div className="w-24 h-24 md:w-32 md:h-32 rounded-[1.7rem] overflow-hidden bg-slate-200">
+                     <img 
+                      src={currentPromoter?.image} 
+                      alt={currentPromoter?.name} 
+                      className="w-full h-full object-cover transition-opacity duration-500" 
+                      style={{ objectPosition: currentPromoter?.imagePosition || '50% 50%' }}
+                    />
+                   </div>
                 </div>
-                <div className="mt-20 md:mt-28 space-y-4 relative z-0">
-                  <Quote className="w-10 h-10 md:w-12 md:h-12 opacity-10 text-emerald-600 mx-auto fill-current group-hover:opacity-30 group-hover:rotate-12 group-hover:scale-110 group-hover:text-emerald-500 transition-all duration-500 ease-out" />
-                  <blockquote className="text-lg md:text-2xl font-bold text-slate-800 italic leading-snug tracking-tight">
-                    "Sustainable engineering is about re-engineering industrial physics into performance assets."
+
+                <div className="mt-16 md:mt-20 space-y-4 relative z-0 transition-opacity duration-500 animate-in fade-in">
+                  <Quote className="w-10 h-10 md:w-12 md:h-12 opacity-20 text-emerald-400 mx-auto fill-current mb-4" />
+                  
+                  <blockquote className="text-lg md:text-xl font-bold text-slate-800 italic leading-snug tracking-tight min-h-[100px] flex items-center justify-center">
+                    "{currentPromoter?.quote || "Engineering excellence is the cornerstone of sustainable industrial growth."}"
                   </blockquote>
-                  <div>
-                    <h4 className="text-lg md:text-xl font-black text-slate-900 tracking-tight group-hover:text-emerald-900 transition-colors">Jeet Sarma</h4>
-                    <p className="text-emerald-600 font-black text-[9px] md:text-[10px] uppercase tracking-widest mt-1">Director & Co-Founder</p>
+                  
+                  <div className="pt-4 border-t border-emerald-50">
+                    <h4 className="text-lg md:text-xl font-black text-slate-900 tracking-tight text-emerald-900">{currentPromoter?.name}</h4>
+                    <p className="text-emerald-600 font-black text-[9px] md:text-[10px] uppercase tracking-widest mt-1">Director & Promoter</p>
                   </div>
+                </div>
+
+                {/* Slider Indicators */}
+                <div className="absolute bottom-6 flex space-x-2">
+                  {team.map((_, idx) => (
+                    <button 
+                      key={idx}
+                      onClick={() => setCurrentQuoteIndex(idx)}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentQuoteIndex ? 'bg-emerald-500 w-6' : 'bg-slate-200 hover:bg-emerald-300'}`}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
@@ -97,10 +172,19 @@ const Download: React.FC = () => {
                    <div className="absolute top-0 -left-[100%] w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 transition-all duration-1000 group-hover:left-[100%]"></div>
                    
                   <DownloadIcon className="w-5 h-5 mr-3 group-hover:-translate-y-1 transition-transform relative z-10" />
-                  <span className="relative z-10">Access Company Profile</span>
+                  <span className="relative z-10">
+                    {profileDoc ? `Download ${profileDoc.name}` : 'Access Company Profile'}
+                  </span>
                 </button>
-                <p className="mt-3 text-[10px] text-center sm:text-left text-slate-400 font-black uppercase tracking-widest pl-2">
-                  PDF Format • 4.2 MB • Latest Version 2025.1
+                <p className="mt-3 text-[10px] text-center sm:text-left text-slate-400 font-black uppercase tracking-widest pl-2 flex items-center justify-center sm:justify-start">
+                  {profileDoc ? (
+                    <>
+                      <CheckCircle className="w-3 h-3 mr-1 text-emerald-500" />
+                      Live Version • {profileDoc.size}
+                    </>
+                  ) : (
+                    'PDF Format • 4.2 MB • Latest Version 2025.1'
+                  )}
                 </p>
               </div>
             </div>

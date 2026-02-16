@@ -19,6 +19,8 @@ export interface Promoter {
   bio: string;
   image: string;
   specialties: string[];
+  quote: string;
+  imagePosition?: string; // Format: "50% 50%"
 }
 
 export interface Industry {

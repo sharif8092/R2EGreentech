@@ -17,9 +17,9 @@ import {
 
 export const NAV_LINKS = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
   { label: 'Services', href: '/services' },
   { label: 'Industries', href: '/industries' },
+  { label: 'About', href: '/about' },
   { label: 'Download', href: '/download' }
 ];
 
@@ -118,32 +118,34 @@ export const CORE_VERTICALS = [
   }
 ];
 
-export const AKHILESH_IMAGE = "/public/input_file_2.jpg"; //akhilesh-dubey.png
-export const JEET_IMAGE = "/public/input_file_1.jpg";    //jeet-sarma.png
-export const KASHIF_IMAGE = "/public/input_file_3.jpg";  //kashif-kamran.png
+export const AKHILESH_IMAGE = "input_file_0.png";
+export const JEET_IMAGE = "input_file_1.png";
+export const KASHIF_IMAGE = "input_file_3.png";
 
 export const PROMOTERS = [
   {
     name: 'Akhilesh Dubey',
     experience: '30+ Years',
-    bio: '30+ Years of Experience in Quality Engg Solutions, HVAC products and applications, manufacturing and process design, Solar thermal projects.',
+    bio: 'With over 30 years of engineering authority, Akhilesh has been a pivotal force in shaping quality standards for HVAC and thermal systems. His expertise extends beyond design into the rigorous application of process engineering—ensuring that manufacturing lines deliver zero-defect output. He has led complex solar thermal projects and defined quality protocols that are now industry benchmarks, making him the technical conscience of our engineering operations.',
     image: AKHILESH_IMAGE,
-    specialties: ['Quality Engineering', 'Manufacturing Process', 'Solar Thermal']
-    
+    specialties: ['Quality Engineering', 'Manufacturing Process', 'Solar Thermal'],
+    quote: "Quality engineering is not an act, it is a habit of precision that defines industrial longevity."
   },
   {
     name: 'Jeet Sarma',
     experience: '25+ Years',
-    bio: '25+ Years of Experience Product design & application in consumer durable and HVAC, manufacturing and supply chain management, E waste management, P&L accountability.',
+    bio: 'Jeet brings 25+ years of strategic innovation to the table, bridging the gap between product engineering and lifecycle management. His career has been defined by a dual focus: optimizing high-performance HVAC systems and pioneering sustainable supply chains. He doesn\'t just manage operations; he re-engineers them for circularity, ensuring that P&L accountability aligns perfectly with E-waste recovery and responsible manufacturing.',
     image: JEET_IMAGE,
-    specialties: ['Product Design', 'Manufacturing', 'E-waste Recycling']
+    specialties: ['Product Design', 'Manufacturing', 'E-waste Recycling'],
+    quote: "Sustainable engineering is about re-engineering industrial physics into performance assets."
   },
   {
     name: 'Kashif Kamran',
     experience: '10+ Years',
-    bio: '10+ Years of Experience in HVAC, commodity sales, and end-to-end supply chain management, with strong exposure to E-waste management, EPR compliance, ERP solutions, and regulatory frameworks.',
+    bio: 'In a decade of high-impact operations, Kashif has mastered the intricate logistics of the circular economy. His expertise spans the full spectrum of the supply chain—from the technical execution of HVAC projects to the regulatory complexities of E-waste management. With a deep command of EPR compliance and ERP systems, he orchestrates the movement of critical resources, ensuring seamless alignment between regulatory frameworks and operational realities.',
     image: KASHIF_IMAGE,
-    specialties: ['HVAC Projects', 'Supply Chain', 'E-waste Recycling']
+    specialties: ['HVAC Projects', 'Supply Chain', 'E-waste Recycling'],
+    quote: "Supply chain resilience allows us to close the loop between consumption and recovery effectively."
   }
 ];
 
@@ -182,7 +184,7 @@ export const INDUSTRIES = [
     id: 'pharma',
     name: 'Pharmaceuticals',
     icon: <Stethoscope className="w-8 h-8" />,
-    image: '/pharma.png',
+    image: 'https://images.unsplash.com/photo-1587854692152-cbe660dbbb88?auto=format&fit=crop&q=80&w=1200',
     description: 'Precision climate control and high-purity environment engineering for sterile manufacturing.',
     solutions: [
       { vertical: 'HVAC', title: 'Cleanroom HVAC & Process Cooling', detail: 'Class 100/1000 compliance with strict humidity/temp stability.' },
@@ -206,7 +208,7 @@ export const INDUSTRIES = [
     id: 'datacenters',
     name: 'Data Centers',
     icon: <Database className="w-8 h-8" />,
-    image: '/datacentre.png',
+    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc48?auto=format&fit=crop&q=80&w=1200',
     description: 'Optimizing PUE and managing the critical lifecycle of high-density battery assets.',
     solutions: [
       { vertical: 'HVAC', title: 'Advanced Thermal Management', detail: 'Precision cooling retrofits and energy-efficiency monitoring.' },
@@ -218,7 +220,7 @@ export const INDUSTRIES = [
     id: 'oems',
     name: 'OEM Brands',
     icon: <Cpu className="w-8 h-8" />,
-    image: '/OEM.png',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1200',
     description: 'Complete EPR sovereignty and vendor quality engineering for global durable brands.',
     solutions: [
       { vertical: 'E-Waste', title: 'EPR Compliance & Reverse Logistics', detail: 'End-to-end take-back programs and regulatory reporting.' },

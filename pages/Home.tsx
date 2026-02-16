@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowRight, 
@@ -27,10 +27,23 @@ import { CORE_VERTICALS, BRAND_SOLUTIONS } from '../constants';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const [siteImages, setSiteImages] = useState<{[key: string]: string}>({});
+  const [sitePositions, setSitePositions] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     document.title = "R2E Greentech | Strategic Architect for Li-Ion & E-Waste Recovery";
+    const storedImages = localStorage.getItem('r2e_site_images');
+    const storedPositions = localStorage.getItem('r2e_site_positions');
+    
+    if (storedImages) setSiteImages(JSON.parse(storedImages));
+    if (storedPositions) setSitePositions(JSON.parse(storedPositions));
   }, []);
+
+  const heroBg = siteImages['home_hero'] || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2400";
+  const heroPos = sitePositions['home_hero'] || '50% 50%';
+  
+  const whyChooseImg = siteImages['home_why_choose'] || "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1000";
+  const whyChoosePos = sitePositions['home_why_choose'] || '50% 50%';
 
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
@@ -42,8 +55,9 @@ const Home: React.FC = () => {
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20"></div>
           {/* Darkened Tech Image */}
           <img 
-            src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2400" 
+            src={heroBg} 
             className="absolute inset-0 w-full h-full object-cover opacity-10 mix-blend-luminosity"
+            style={{ objectPosition: heroPos }}
             alt="Advanced Industrial Process"
             loading="eager"
             fetchPriority="high"
@@ -321,8 +335,9 @@ const Home: React.FC = () => {
              <div className="relative order-2 lg:order-1">
                <div className="absolute -left-4 -top-4 md:-left-10 md:-top-10 w-24 h-24 md:w-40 md:h-40 bg-emerald-500/10 rounded-full blur-3xl"></div>
                <img 
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1000" 
+                src={whyChooseImg}
                 className="relative z-10 rounded-[2rem] md:rounded-[3rem] shadow-2xl border-4 md:border-8 border-slate-50 w-full" 
+                style={{ objectPosition: whyChoosePos }}
                 alt="Engineering Accuracy" 
                />
                <div className="absolute -bottom-4 -right-4 md:-bottom-8 md:-right-8 bg-slate-900 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-white shadow-2xl z-20">

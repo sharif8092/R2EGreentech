@@ -66,14 +66,13 @@ const Navbar: React.FC = () => {
                     <path d="M0 -8 L8 -28 L-8 -28 Z" fill="currentColor" transform="rotate(240)" />
                   </g>
                 </svg>
-                
               </div>
               <div className="flex flex-col">
                 <div className="flex items-baseline space-x-1">
                   <span className="text-lg md:text-xl font-black tracking-tighter text-slate-800">R2E</span>
                   <span className="text-lg md:text-xl font-black tracking-tighter text-emerald-600">Greentech</span>
                 </div>
-                <span className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em] text-slate-500 -mt-0.5 leading-none">Engineering The Future</span>
+                <span className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em] text-slate-500 -mt-0.5 leading-none">Pvt. Ltd.</span>
               </div>
             </Link>
 

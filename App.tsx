@@ -19,6 +19,8 @@ const Dashboard = React.lazy(() => import('./pages/admin/Dashboard'));
 const Leads = React.lazy(() => import('./pages/admin/Leads'));
 const Documents = React.lazy(() => import('./pages/admin/Documents'));
 const Settings = React.lazy(() => import('./pages/admin/Settings'));
+const Promoters = React.lazy(() => import('./pages/admin/Promoters'));
+const SiteMedia = React.lazy(() => import('./pages/admin/SiteMedia'));
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -47,9 +49,9 @@ const App: React.FC = () => {
           <Routes>
             {/* Public Routes - Wrapped in Layout */}
             <Route path="/" element={<><Navbar /><main className="flex-grow"><Home /></main><Footer /></>} />
-            <Route path="/about" element={<><Navbar /><main className="flex-grow"><About /></main><Footer /></>} />
             <Route path="/services" element={<><Navbar /><main className="flex-grow"><Services /></main><Footer /></>} />
             <Route path="/industries" element={<><Navbar /><main className="flex-grow"><Industries /></main><Footer /></>} />
+            <Route path="/about" element={<><Navbar /><main className="flex-grow"><About /></main><Footer /></>} />
             <Route path="/contact" element={<><Navbar /><main className="flex-grow"><Contact /></main><Footer /></>} />
             <Route path="/download" element={<><Navbar /><main className="flex-grow"><Download /></main><Footer /></>} />
             
@@ -59,6 +61,8 @@ const App: React.FC = () => {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="leads" element={<Leads />} />
               <Route path="documents" element={<Documents />} />
+              <Route path="promoters" element={<Promoters />} />
+              <Route path="media" element={<SiteMedia />} />
               <Route path="settings" element={<Settings />} />
             </Route>
 

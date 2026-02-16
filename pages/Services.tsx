@@ -1,20 +1,36 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { 
   CheckCircle2, 
   ChevronRight,
-  ShieldCheck,
-  Zap,
+  ShieldCheck, 
+  Zap, 
   CheckCircle
 } from 'lucide-react';
 import { CORE_VERTICALS } from '../constants';
 
 const Services: React.FC = () => {
   const { hash } = useLocation();
+  const [services, setServices] = useState(CORE_VERTICALS);
 
   useEffect(() => {
     document.title = "Industrial Solutions | HVAC, E-Waste & Solar | R2E Greentech";
+    
+    // Check for dynamic images and positions
+    const storedImages = localStorage.getItem('r2e_site_images');
+    const storedPositions = localStorage.getItem('r2e_site_positions');
+    const images = storedImages ? JSON.parse(storedImages) : {};
+    const positions = storedPositions ? JSON.parse(storedPositions) : {};
+
+    if (storedImages || storedPositions) {
+      const updatedServices = CORE_VERTICALS.map(s => ({
+        ...s,
+        image: images[`service_${s.id}`] || s.image,
+        imagePosition: positions[`service_${s.id}`] || '50% 50%' // Add temporary property for rendering
+      }));
+      setServices(updatedServices);
+    }
   }, []);
 
   useEffect(() => {
@@ -24,7 +40,7 @@ const Services: React.FC = () => {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     }
-  }, [hash]);
+  }, [hash, services]);
 
   return (
     <div className="pt-20 pb-16">
@@ -51,7 +67,7 @@ const Services: React.FC = () => {
       <section className="py-16 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-24 md:space-y-32">
-            {CORE_VERTICALS.map((service, idx) => (
+            {services.map((service: any, idx) => (
               <div key={service.id} id={service.id} className={`grid lg:grid-cols-12 gap-12 md:gap-16 items-start scroll-mt-24 md:scroll-mt-32 ${idx % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
                 
                 {/* Visual Content */}
@@ -61,6 +77,7 @@ const Services: React.FC = () => {
                     <img 
                       src={service.image} 
                       className="relative z-10 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl w-full h-[300px] md:h-[500px] object-cover border-4 md:border-8 border-white" 
+                      style={{ objectPosition: service.imagePosition }}
                       alt={service.title} 
                     />
                     {service.id === 'hvac' && (
@@ -94,13 +111,13 @@ const Services: React.FC = () => {
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 pt-4">
-                    {service.categories?.map((cat, ci) => (
+                    {service.categories?.map((cat: any, ci: number) => (
                       <div key={ci} className="space-y-4 p-5 md:p-6 bg-slate-50 rounded-2xl md:rounded-3xl border border-slate-100 hover:border-emerald-200 transition-all">
                         <h4 className="text-xs md:text-sm font-black text-slate-900 uppercase tracking-widest border-b border-slate-200 pb-3">
                           {cat.name}
                         </h4>
                         <ul className="space-y-3">
-                          {cat.items.map((item, ii) => (
+                          {cat.items.map((item: string, ii: number) => (
                             <li key={ii} className="flex items-start text-[11px] md:text-xs font-bold text-slate-700 tracking-tight leading-snug">
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 mr-2.5 mt-0.5 shrink-0" />
                               {item}

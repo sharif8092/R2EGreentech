@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Users, 
@@ -14,8 +14,16 @@ import {
 import { PROMOTERS, OBJECTIVES } from '../constants';
 
 const About: React.FC = () => {
+  const [team, setTeam] = useState(PROMOTERS);
+
   useEffect(() => {
     document.title = "About R2E Greentech | Engineering Excellence";
+    
+    // Check for admin-updated promoters
+    const storedTeam = localStorage.getItem('r2e_promoters');
+    if (storedTeam) {
+      setTeam(JSON.parse(storedTeam));
+    }
   }, []);
 
   return (
@@ -66,7 +74,7 @@ const About: React.FC = () => {
             <p className="mt-4 text-slate-500 font-medium max-w-2xl mx-auto px-4">Our promoters bring decades of specific domain expertise in high-precision manufacturing, HVAC systems, and e-waste management.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {PROMOTERS.map((p, i) => (
+            {team.map((p, i) => (
               <div key={i} className="flex flex-col bg-white rounded-[2.5rem] overflow-hidden border border-slate-200 transition-all duration-700 hover:shadow-[0_30px_60px_-15px_rgba(16,185,129,0.15)] hover:-translate-y-3 hover:border-emerald-500/30 group relative">
                 
                 {/* Technical Grid Overlay on Hover */}
@@ -78,17 +86,16 @@ const About: React.FC = () => {
                 </div>
                 
                 <div className="p-8 md:p-10 flex-grow flex flex-col items-center relative z-10">
-                  <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden mb-6 md:mb-8 border-4 border-slate-50 group-hover:border-emerald-100/50 group-hover:scale-105 transition-all duration-700 shadow-xl relative">
+                  <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden mb-6 md:mb-8 border-4 border-slate-50 group-hover:border-emerald-100/50 group-hover:scale-105 transition-all duration-700 shadow-xl relative bg-slate-50">
                     {/* Grayscale to Color Transition */}
                     <div className="absolute inset-0 bg-emerald-500/10 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"></div>
-                    
                     <img 
                       src={p.image} 
-                      className="w-full  object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
+                      style={{ objectPosition: p.imagePosition || '50% 50%' }}
                       alt={p.name} 
                       loading="lazy" 
                     />
-
                   </div>
                   <p className="text-center text-slate-600 text-sm leading-relaxed mb-6 md:mb-8 font-medium group-hover:text-slate-800 transition-colors">
                     {p.bio}

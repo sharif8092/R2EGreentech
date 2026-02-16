@@ -56,6 +56,7 @@ const IndustryVisualCard: React.FC<{ industry: any }> = ({ industry }) => {
       <img 
         src={industry.image} 
         className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 group-hover:rotate-1 group-[.mobile-active]:scale-110 group-[.mobile-active]:rotate-1" 
+        style={{ objectPosition: industry.imagePosition }}
         alt={industry.name} 
       />
       
@@ -120,8 +121,25 @@ const SolutionItem: React.FC<{ sol: any }> = ({ sol }) => {
 };
 
 const Industries: React.FC = () => {
+  const [industries, setIndustries] = useState(INDUSTRIES);
+
   useEffect(() => {
     document.title = "Sectors & Industries | Engineering Clean Energy | R2E Greentech";
+    
+    // Check for dynamic images and positions
+    const storedImages = localStorage.getItem('r2e_site_images');
+    const storedPositions = localStorage.getItem('r2e_site_positions');
+    const images = storedImages ? JSON.parse(storedImages) : {};
+    const positions = storedPositions ? JSON.parse(storedPositions) : {};
+
+    if (storedImages || storedPositions) {
+      const updatedIndustries = INDUSTRIES.map(ind => ({
+        ...ind,
+        image: images[`industry_${ind.id}`] || ind.image,
+        imagePosition: positions[`industry_${ind.id}`] || '50% 50%' // Add property
+      }));
+      setIndustries(updatedIndustries);
+    }
   }, []);
 
   return (
@@ -149,7 +167,7 @@ const Industries: React.FC = () => {
       <section className="py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-24 md:space-y-32">
-            {INDUSTRIES.map((industry, idx) => (
+            {industries.map((industry: any, idx) => (
               <div key={industry.id} className="grid lg:grid-cols-12 gap-10 md:gap-12 items-start">
                 {/* Visual Sidebar */}
                 <div className={`lg:col-span-5 space-y-6 ${idx % 2 !== 0 ? 'lg:order-last' : ''} order-first lg:order-none`}>
@@ -164,7 +182,7 @@ const Industries: React.FC = () => {
                   </div>
 
                   <div className="grid gap-4 md:gap-5">
-                    {industry.solutions.map((sol, si) => (
+                    {industry.solutions.map((sol: any, si: number) => (
                       <SolutionItem key={si} sol={sol} />
                     ))}
                   </div>
