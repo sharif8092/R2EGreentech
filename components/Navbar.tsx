@@ -72,7 +72,7 @@ const Navbar: React.FC = () => {
                   <span className="text-lg md:text-xl font-black tracking-tighter text-slate-800">R2E</span>
                   <span className="text-lg md:text-xl font-black tracking-tighter text-emerald-600">Greentech</span>
                 </div>
-                <span className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em] text-slate-500 -mt-0.5 leading-none">Pvt. Ltd.</span>
+                <span className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em] text-slate-500 -mt-0.5 leading-none">Engineering the Future...</span>
               </div>
             </Link>
 
