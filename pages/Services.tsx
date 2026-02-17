@@ -192,7 +192,7 @@ const Services: React.FC = () => {
               Strategic Industrial Integration
             </h2>
             <p className="text-emerald-100 text-base md:text-lg font-medium mb-8 md:mb-10 max-w-2xl mx-auto">
-              R2E Greentech can operate at client sites on a fixed hourly basis or custom mutually agreed NDA conditions.
+              R2E Greentech can operate at client sites on a fixed hourly basis or custom mutually agreed NDA conditions
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <a href="#/contact" className="px-8 md:px-12 py-4 md:py-5 bg-white text-emerald-900 rounded-2xl font-black text-base md:text-lg shadow-xl hover:bg-slate-50 transition-all flex items-center justify-center">

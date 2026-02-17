@@ -17,7 +17,7 @@ const About: React.FC = () => {
   const [team, setTeam] = useState(PROMOTERS);
 
   useEffect(() => {
-    document.title = "About R2E Greentech | Engineering Excellence";
+    document.title = "About R2E Greentech | Engineering Excellence ";
     
     // Check for admin-updated promoters
     const storedTeam = localStorage.getItem('r2e_promoters');
