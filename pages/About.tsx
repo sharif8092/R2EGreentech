@@ -91,7 +91,7 @@ const About: React.FC = () => {
                     <div className="absolute inset-0 bg-emerald-500/10 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"></div>
                     <img 
                       src={p.image} 
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
+                      className="w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
                       style={{ objectPosition: p.imagePosition || '50% 50%' }}
                       alt={p.name} 
                       loading="lazy" 
