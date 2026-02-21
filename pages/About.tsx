@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from "axios";
 import { 
   Users, 
   Target, 
@@ -14,17 +15,24 @@ import {
 import { PROMOTERS, OBJECTIVES } from '../constants';
 
 const About: React.FC = () => {
-  const [team, setTeam] = useState(PROMOTERS);
+  const [team, setTeam] = useState<any[]>([]);
 
-  useEffect(() => {
-    document.title = "About R2E Greentech | Engineering Excellence ";
-    
-    // Check for admin-updated promoters
-    const storedTeam = localStorage.getItem('r2e_promoters');
-    if (storedTeam) {
-      setTeam(JSON.parse(storedTeam));
-    }
-  }, []);
+useEffect(() => {
+  document.title = "About R2E Greentech | Engineering Excellence ";
+
+  fetchPromoters();
+}, []);
+
+const fetchPromoters = async () => {
+  try {
+    const res = await axios.get(
+      "https://r2egreentech.in/backend/promoters/get-promoters.php"
+    );
+    setTeam(res.data);
+  } catch (error) {
+    console.error("Failed to fetch promoters:", error);
+  }
+};
 
   return (
     <div className="pt-20 pb-16 bg-slate-50 min-h-screen">

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, CheckCircle, AlertCircle, MonitorPlay, Layers, Factory, Move } from 'lucide-react';
 import { CORE_VERTICALS, INDUSTRIES } from '../../constants';
-import { createService } from '../../api/services';
+import { createService } from '../../src/api/services';
 
 interface SiteImages {
   [key: string]: string;
