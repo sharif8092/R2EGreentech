@@ -118,16 +118,16 @@ export const CORE_VERTICALS = [
   }
 ];
 
-export const AKHILESH_IMAGE = "input_file_0.png";
-export const JEET_IMAGE = "input_file_1.png";
-export const KASHIF_IMAGE = "input_file_3.png";
+export const AKHILESH_IMAGE = "/ak.png";
+export const JEET_IMAGE = "/jeet.png";
+export const KASHIF_IMAGE = "/kashif.png";
 
 export const PROMOTERS = [
   {
     name: 'Akhilesh Dubey',
     experience: '30+ Years',
     bio: 'With over 30 years of engineering authority, Akhilesh has been a pivotal force in shaping quality standards for HVAC and thermal systems. His expertise extends beyond design into the rigorous application of process engineering—ensuring that manufacturing lines deliver zero-defect output. He has led complex solar thermal projects and defined quality protocols that are now industry benchmarks, making him the technical conscience of our engineering operations.',
-    image: '/ak.png',
+    image: AKHILESH_IMAGE,
     specialties: ['Quality Engineering', 'Manufacturing Process', 'Solar Thermal'],
     quote: "Quality engineering is not an act, it is a habit of precision that defines industrial longevity."
   },
@@ -135,7 +135,7 @@ export const PROMOTERS = [
     name: 'Jeet Sarma',
     experience: '25+ Years',
     bio: 'Jeet brings 25+ years of strategic innovation to the table, bridging the gap between product engineering and lifecycle management. His career has been defined by a dual focus: optimizing high-performance HVAC systems and pioneering sustainable supply chains. He doesn\'t just manage operations; he re-engineers them for circularity, ensuring that P&L accountability aligns perfectly with E-waste recovery and responsible manufacturing.',
-    image: '/jeet.png',
+    image: JEET_IMAGE,
     specialties: ['Product Design', 'Manufacturing', 'E-waste Recycling'],
     quote: "Sustainable engineering is about re-engineering industrial physics into performance assets."
   },
@@ -143,7 +143,7 @@ export const PROMOTERS = [
     name: 'Kashif Kamran',
     experience: '10+ Years',
     bio: 'In a decade of high-impact operations, Kashif has mastered the intricate logistics of the circular economy. His expertise spans the full spectrum of the supply chain—from the technical execution of HVAC projects to the regulatory complexities of E-waste management. With a deep command of EPR compliance and ERP systems, he orchestrates the movement of critical resources, ensuring seamless alignment between regulatory frameworks and operational realities.',
-    image: '/kashif.png',
+    image: KASHIF_IMAGE,
     specialties: ['HVAC Projects', 'Supply Chain', 'E-waste Recycling'],
     quote: "Supply chain resilience allows us to close the loop between consumption and recovery effectively."
   }

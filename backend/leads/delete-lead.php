@@ -1,0 +1,11 @@
+<?php
+require_once "../config/database.php";
+
+$id = $_GET['id'];
+
+$stmt = $conn->prepare("DELETE FROM leads WHERE id=?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+
+echo json_encode(["status"=>"deleted"]);
+?>

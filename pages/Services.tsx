@@ -9,25 +9,52 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { CORE_VERTICALS } from '../constants';
+import { getServices } from '../api/services';
+
+
 
 const Services: React.FC = () => {
   const { hash } = useLocation();
   const [services, setServices] = useState(CORE_VERTICALS);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     document.title = "Industrial Solutions | HVAC, E-Waste & Solar | R2E Greentech";
     
-    // Check for dynamic images and positions
+    // Fetch services from backend
+    const fetchServices = async () => {
+      try {
+        const backendServices = await getServices();
+        if (backendServices && backendServices.length > 0) {
+          setServices(backendServices);
+        } else {
+          // Fallback to constants if backend returns empty
+          setServices(CORE_VERTICALS);
+        }
+      } catch (error) {
+        console.log('Backend not available, using default services');
+        // Fallback to constants if backend is unavailable
+        setServices(CORE_VERTICALS);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  // Check for dynamic images and positions from localStorage
+  useEffect(() => {
     const storedImages = localStorage.getItem('r2e_site_images');
     const storedPositions = localStorage.getItem('r2e_site_positions');
     const images = storedImages ? JSON.parse(storedImages) : {};
     const positions = storedPositions ? JSON.parse(storedPositions) : {};
 
     if (storedImages || storedPositions) {
-      const updatedServices = CORE_VERTICALS.map(s => ({
+      const updatedServices = services.map(s => ({
         ...s,
         image: images[`service_${s.id}`] || s.image,
-        imagePosition: positions[`service_${s.id}`] || '50% 50%' // Add temporary property for rendering
+        imagePosition: positions[`service_${s.id}`] || '50% 50%'
       }));
       setServices(updatedServices);
     }

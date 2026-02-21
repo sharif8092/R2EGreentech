@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, CheckCircle, AlertCircle, MonitorPlay, Layers, Factory, Move } from 'lucide-react';
 import { CORE_VERTICALS, INDUSTRIES } from '../../constants';
+import { createService } from '../../api/services';
 
 interface SiteImages {
   [key: string]: string;
@@ -16,6 +17,7 @@ const SiteMedia: React.FC = () => {
   const [positions, setPositions] = useState<SitePositions>({});
   const [msg, setMsg] = useState({ type: '', text: '' });
   const [activeTab, setActiveTab] = useState<'home' | 'services' | 'industries'>('home');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const storedImages = localStorage.getItem('r2e_site_images');
@@ -30,7 +32,7 @@ const SiteMedia: React.FC = () => {
     localStorage.setItem('r2e_site_positions', JSON.stringify(newPositions));
   };
 
-  const handleUpload = (key: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = async (key: string, e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       
@@ -39,17 +41,55 @@ const SiteMedia: React.FC = () => {
         return;
       }
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          const newImages = { ...images, [key]: reader.result };
-          setImages(newImages);
-          localStorage.setItem('r2e_site_images', JSON.stringify(newImages));
-          setMsg({ type: 'success', text: 'Image updated successfully!' });
+      setUploading(true);
+
+      // For service uploads, send to backend
+      if (key.startsWith('service_')) {
+        try {
+          const formData = new FormData();
+          const serviceId = key.replace('service_', '');
+          const service = CORE_VERTICALS.find(s => s.id === serviceId);
+          
+          formData.append('title', service?.title || 'Service');
+          formData.append('description', service?.description || '');
+          formData.append('image', file);
+
+          const response = await createService(formData);
+          setMsg({ type: 'success', text: 'Service image uploaded to backend successfully!' });
           setTimeout(() => setMsg({ type: '', text: '' }), 3000);
+        } catch (error) {
+          console.error('Upload error:', error);
+          setMsg({ type: 'error', text: 'Failed to upload to backend. Using local storage...' });
+          
+          // Fallback to localStorage
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            if (typeof reader.result === 'string') {
+              const newImages = { ...images, [key]: reader.result };
+              setImages(newImages);
+              localStorage.setItem('r2e_site_images', JSON.stringify(newImages));
+              setMsg({ type: 'success', text: 'Image saved locally!' });
+              setTimeout(() => setMsg({ type: '', text: '' }), 3000);
+            }
+          };
+          reader.readAsDataURL(file);
         }
-      };
-      reader.readAsDataURL(file);
+      } else {
+        // For non-service images, use localStorage
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === 'string') {
+            const newImages = { ...images, [key]: reader.result };
+            setImages(newImages);
+            localStorage.setItem('r2e_site_images', JSON.stringify(newImages));
+            setMsg({ type: 'success', text: 'Image updated successfully!' });
+            setTimeout(() => setMsg({ type: '', text: '' }), 3000);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+
+      setUploading(false);
     }
   };
 
@@ -120,10 +160,10 @@ const SiteMedia: React.FC = () => {
           </div>
         </div>
 
-        <label className="flex items-center justify-center w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-colors cursor-pointer shadow-sm">
+        <label className="flex items-center justify-center w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-colors cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
           <Upload className="w-4 h-4 mr-2" />
-          Replace Image
-          <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload(key, e)} />
+          {uploading ? 'Uploading...' : 'Replace Image'}
+          <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload(key, e)} disabled={uploading} />
         </label>
       </div>
     );
