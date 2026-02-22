@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Upload, CheckCircle, AlertCircle, MonitorPlay, Layers, Factory, Move } from 'lucide-react';
 import { CORE_VERTICALS, INDUSTRIES } from '../../constants';
-import { createService } from '../../src/api/services';
 
 interface SiteImages {
   [key: string]: string;
@@ -12,6 +11,8 @@ interface SitePositions {
   [key: string]: string; // "50% 50%"
 }
 
+const SETTINGS_API = "https://r2egreentech.in/backend/settings/";
+
 const SiteMedia: React.FC = () => {
   const [images, setImages] = useState<SiteImages>({});
   const [positions, setPositions] = useState<SitePositions>({});
@@ -20,80 +21,75 @@ const SiteMedia: React.FC = () => {
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    const storedImages = localStorage.getItem('r2e_site_images');
-    const storedPositions = localStorage.getItem('r2e_site_positions');
-    
-    if (storedImages) setImages(JSON.parse(storedImages));
-    if (storedPositions) setPositions(JSON.parse(storedPositions));
+    fetchSettings();
   }, []);
 
-  const savePositions = (newPositions: SitePositions) => {
-    setPositions(newPositions);
-    localStorage.setItem('r2e_site_positions', JSON.stringify(newPositions));
+  // Fetch all site settings from Database
+  const fetchSettings = async () => {
+    try {
+      const res = await axios.get(SETTINGS_API + "get-all-settings.php");
+      const data = res.data;
+      
+      const loadedImages: SiteImages = {};
+      const loadedPositions: SitePositions = {};
+
+      Object.keys(data).forEach(key => {
+        if (key.startsWith('img_')) loadedImages[key.replace('img_', '')] = data[key];
+        if (key.startsWith('pos_')) loadedPositions[key.replace('pos_', '')] = data[key];
+      });
+
+      setImages(loadedImages);
+      setPositions(loadedPositions);
+    } catch (error) {
+      console.error("Failed to load settings from DB", error);
+    }
+  };
+
+  // Save specific key-value to Database
+  const saveToDatabase = async (key: string, value: string) => {
+    try {
+      await axios.post(SETTINGS_API + "update-setting.php", {
+        key_name: key,
+        value: value
+      });
+    } catch (error) {
+      console.error("Failed to save setting", error);
+      setMsg({ type: 'error', text: 'Server error while saving.' });
+    }
   };
 
   const handleUpload = async (key: string, e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       
-      if (file.size > 800 * 1024) { // 800KB limit
+      if (file.size > 800 * 1024) {
         setMsg({ type: 'error', text: 'Image too large. Please use an image under 800KB.' });
         return;
       }
 
       setUploading(true);
-
-      // For service uploads, send to backend
-      if (key.startsWith('service_')) {
-        try {
-          const formData = new FormData();
-          const serviceId = key.replace('service_', '');
-          const service = CORE_VERTICALS.find(s => s.id === serviceId);
+      const reader = new FileReader();
+      
+      reader.onloadend = async () => {
+        if (typeof reader.result === 'string') {
+          const base64Image = reader.result;
           
-          formData.append('title', service?.title || 'Service');
-          formData.append('description', service?.description || '');
-          formData.append('image', file);
-
-          const response = await createService(formData);
-          setMsg({ type: 'success', text: 'Service image uploaded to backend successfully!' });
+          // Update local state
+          setImages(prev => ({ ...prev, [key]: base64Image }));
+          
+          // Save to DB
+          await saveToDatabase(`img_${key}`, base64Image);
+          
+          setMsg({ type: 'success', text: 'Image updated successfully!' });
           setTimeout(() => setMsg({ type: '', text: '' }), 3000);
-        } catch (error) {
-          console.error('Upload error:', error);
-          setMsg({ type: 'error', text: 'Failed to upload to backend. Using local storage...' });
-          
-          // Fallback to localStorage
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            if (typeof reader.result === 'string') {
-              const newImages = { ...images, [key]: reader.result };
-              setImages(newImages);
-              localStorage.setItem('r2e_site_images', JSON.stringify(newImages));
-              setMsg({ type: 'success', text: 'Image saved locally!' });
-              setTimeout(() => setMsg({ type: '', text: '' }), 3000);
-            }
-          };
-          reader.readAsDataURL(file);
+          setUploading(false);
         }
-      } else {
-        // For non-service images, use localStorage
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          if (typeof reader.result === 'string') {
-            const newImages = { ...images, [key]: reader.result };
-            setImages(newImages);
-            localStorage.setItem('r2e_site_images', JSON.stringify(newImages));
-            setMsg({ type: 'success', text: 'Image updated successfully!' });
-            setTimeout(() => setMsg({ type: '', text: '' }), 3000);
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-
-      setUploading(false);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  const handlePositionChange = (key: string, axis: 'x' | 'y', value: number) => {
+  const handlePositionChange = async (key: string, axis: 'x' | 'y', value: number) => {
     const currentPos = positions[key] || "50% 50%";
     const [currX, currY] = currentPos.split(' ').map(v => parseInt(v));
     
@@ -104,7 +100,11 @@ const SiteMedia: React.FC = () => {
       newPosStr = `${isNaN(currX) ? 50 : currX}% ${value}%`;
     }
 
-    savePositions({ ...positions, [key]: newPosStr });
+    // Update local state
+    setPositions(prev => ({ ...prev, [key]: newPosStr }));
+    
+    // Save to DB
+    await saveToDatabase(`pos_${key}`, newPosStr);
   };
 
   const renderUploadControl = (key: string, label: string, defaultImg?: string) => {
@@ -173,7 +173,7 @@ const SiteMedia: React.FC = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Site Images</h1>
-        <p className="text-slate-500 font-medium text-sm">Control visual assets and their focal points.</p>
+        <p className="text-slate-500 font-medium text-sm">Control visual assets and their focal points directly from database.</p>
       </div>
 
       {msg.text && (

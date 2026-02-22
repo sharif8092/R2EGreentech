@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Users, FileText, TrendingUp } from 'lucide-react';
 
 interface Stats {
@@ -23,21 +24,31 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    const leads = safeParse(localStorage.getItem('r2e_leads'), []);
-    const docs = safeParse(localStorage.getItem('r2e_documents'), []);
+    // Current logged-in user ko local session se nikalna theek hai
     const user = safeParse(localStorage.getItem('r2e_current_user'), null);
-
-    setStats({
-      leads: Array.isArray(leads) ? leads.length : 0,
-      docs: Array.isArray(docs) ? docs.filter((d: any) => d.active !== false).length : 0
-    });
-
     setCurrentUser(user);
+
+    // Fetch real stats from Database via APIs
+    const fetchStats = async () => {
+      try {
+        const leadsRes = await axios.get("https://r2egreentech.in/backend/leads/get-leads.php");
+        // Assuming documents API exists as per standard structure
+        const docsRes = await axios.get("https://r2egreentech.in/backend/documents/get-documents.php").catch(() => ({ data: [] }));
+        
+        setStats({
+          leads: Array.isArray(leadsRes.data) ? leadsRes.data.length : 0,
+          docs: Array.isArray(docsRes.data) ? docsRes.data.length : 0
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+      }
+    };
+
+    fetchStats();
   }, []);
 
   return (
     <div className="space-y-8">
-
       {/* HEADER */}
       <div>
         <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">
@@ -50,7 +61,6 @@ const Dashboard: React.FC = () => {
 
       {/* STATS CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
         {/* LEADS */}
         <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
           <div className="flex items-center justify-between mb-4">
