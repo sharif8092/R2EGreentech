@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R2E GreenTech API Test Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .summary-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 5px solid #667eea;
+        }
+
+        .summary-card.success {
+            border-left-color: #28a745;
+        }
+
+        .summary-card.failed {
+            border-left-color: #dc3545;
+        }
+
+        .summary-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .summary-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .summary-card.success .number {
+            color: #28a745;
+        }
+
+        .summary-card.failed .number {
+            color: #dc3545;
+        }
+
+        .tests-section {
+            margin-top: 40px;
+        }
+
+        .tests-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .test-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .test-item.pass {
+            border-left-color: #28a745;
+            background: #f0f8f4;
+        }
+
+        .test-item.fail {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .test-icon {
+            font-size: 1.5em;
+            margin-right: 15px;
+            min-width: 30px;
+        }
+
+        .test-icon.pass {
+            color: #28a745;
+        }
+
+        .test-icon.fail {
+            color: #dc3545;
+        }
+
+        .test-info {
+            flex: 1;
+        }
+
+        .test-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .test-message {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .test-status {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8em;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin-left: 10px;
+        }
+
+        .test-status.pass {
+            background: #28a745;
+            color: white;
+        }
+
+        .test-status.fail {
+            background: #dc3545;
+            color: white;
+        }
+
+        .endpoint-category {
+            margin-bottom: 30px;
+        }
+
+        .endpoint-category h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            padding-left: 10px;
+        }
+
+        .endpoint-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .endpoint-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+
+        .endpoint-method {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.8em;
+            margin-right: 10px;
+            color: white;
+        }
+
+        .endpoint-method.get {
+            background: #0dcaf0;
+        }
+
+        .endpoint-method.post {
+            background: #0d6efd;
+        }
+
+        .endpoint-path {
+            font-family: monospace;
+            color: #666;
+            margin-top: 8px;
+            font-size: 0.9em;
+            word-break: break-all;
+        }
+
+        .timestamp {
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .load-file {
+            margin-bottom: 20px;
+        }
+
+        .load-file input,
+        .load-file button {
+            padding: 10px 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .load-file button {
+            background: #667eea;
+            color: white;
+            border: none;
+        }
+
+        .load-file button:hover {
+            background: #764ba2;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+        }
+
+        .progress-bar {
+            display: flex;
+            height: 30px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-pass {
+            background: #28a745;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .progress-fail {
+            background: #dc3545;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .endpoint-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 R2E GreenTech API Test Dashboard</h1>
+            <p>Real-time API Testing & Analysis</p>
+        </div>
+
+        <div class="content">
+            <div class="load-file">
+                <input type="file" id="fileInput" accept=".json" placeholder="Load test results JSON file">
+                <button onclick="loadFile()">Load Results</button>
+                <button onclick="testNow()">Test Now</button>
+                <button onclick="clearResults()">Clear</button>
+            </div>
+
+            <div id="results"></div>
+
+            <div class="no-data" id="noData">
+                <p>👇 Load a test results JSON file to view here</p>
+                <p style="margin-top: 10px; font-size: 0.9em;">Or click "Test Now" to run tests directly</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a JSON file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    displayResults(data);
+                } catch (err) {
+                    alert('Invalid JSON file: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function testNow() {
+            document.getElementById('noData').innerHTML = '<p>⏳ Running tests...</p>';
+            
+            fetch('/backend/test-api.php')
+                .then(response => response.json())
+                .then(data => displayResults(data))
+                .catch(err => {
+                    alert('Error running tests: ' + err.message);
+                    document.getElementById('noData').innerHTML = '<p>❌ Failed to run tests</p>';
+                });
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            const noData = document.getElementById('noData');
+            
+            resultsDiv.innerHTML = '';
+            noData.style.display = 'none';
+
+            // Summary Cards
+            const summary = data.summary || { total: 0, passed: 0, failed: 0 };
+            const passPercent = summary.total > 0 ? Math.round((summary.passed / summary.total) * 100) : 0;
+
+            const summaryHTML = `
+                <div class="summary">
+                    <div class="summary-card">
+                        <h3>Total Tests</h3>
+                        <div class="number">${summary.total}</div>
+                    </div>
+                    <div class="summary-card success">
+                        <h3>Passed</h3>
+                        <div class="number">${summary.passed}</div>
+                    </div>
+                    <div class="summary-card failed">
+                        <h3>Failed</h3>
+                        <div class="number">${summary.failed}</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Success Rate</h3>
+                        <div class="number">${passPercent}%</div>
+                    </div>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-pass" style="width: ${passPercent}%">${passPercent}%</div>
+                    <div class="progress-fail" style="width: ${100 - passPercent}%">${100 - passPercent}%</div>
+                </div>
+            `;
+
+            resultsDiv.innerHTML += summaryHTML;
+
+            // Test Items
+            if (data.tests && data.tests.length > 0) {
+                let testsHTML = '<div class="tests-section"><h2>Test Results</h2>';
+
+                data.tests.forEach(test => {
+                    const icon = test.passed ? '✓' : '✗';
+                    const status = test.passed ? 'pass' : 'fail';
+                    const statusText = test.passed ? 'Pass' : 'Fail';
+
+                    testsHTML += `
+                        <div class="test-item ${status}">
+                            <div class="test-icon ${status}">${icon}</div>
+                            <div class="test-info">
+                                <div class="test-name">${test.name}</div>
+                                ${test.message ? `<div class="test-message">${test.message}</div>` : ''}
+                            </div>
+                            <div class="test-status ${status}">${statusText}</div>
+                        </div>
+                    `;
+                });
+
+                testsHTML += '</div>';
+                resultsDiv.innerHTML += testsHTML;
+            }
+
+            // Timestamp
+            if (data.timestamp) {
+                const timestamp = `<div class="timestamp">Test Run: ${data.timestamp}</div>`;
+                resultsDiv.innerHTML += timestamp;
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('noData').style.display = 'block';
+        }
+
+        // Auto-load if test results passed as parameter
+        window.addEventListener('load', function() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('load') === 'true') {
+                setTimeout(testNow, 500);
+            }
+        });
+    </script>
+</body>
+</html>

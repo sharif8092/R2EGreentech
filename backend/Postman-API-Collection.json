@@ -1,0 +1,533 @@
+{
+  "info": {
+    "_postman_id": "r2e-greentech-api-tests",
+    "name": "R2E GreenTech API - Complete CRUD Tests",
+    "description": "Comprehensive API testing collection for all GET, POST, CREATE, UPDATE, DELETE operations",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. DATABASE & SETUP",
+      "item": [
+        {
+          "name": "Database Connection Test",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/backend/test.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "test.php"]
+            },
+            "description": "Test basic database connection"
+          }
+        },
+        {
+          "name": "Complete API Test Suite",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/backend/test-api.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "test-api.php"]
+            },
+            "description": "Run complete API test suite with all CRUD operations"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. SERVICES - CRUD Operations",
+      "item": [
+        {
+          "name": "GET - All Services",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/backend/services/get-services.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "services", "get-services.php"]
+            },
+            "description": "Retrieve all services"
+          }
+        },
+        {
+          "name": "POST - Create Service",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "slug",
+                  "value": "test-service-{{$timestamp}}",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "Test Service Title",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "This is a test service description",
+                  "type": "text"
+                },
+                {
+                  "key": "image_position",
+                  "value": "50% 50%",
+                  "type": "text"
+                },
+                {
+                  "key": "categories",
+                  "value": "[\"Enterprise\", \"Cloud\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/backend/services/create.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "services", "create.php"]
+            },
+            "description": "Create a new service"
+          }
+        },
+        {
+          "name": "POST - Update Service",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "slug",
+                  "value": "updated-service-slug",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "Updated Service Title",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Updated description",
+                  "type": "text"
+                },
+                {
+                  "key": "image_position",
+                  "value": "center center",
+                  "type": "text"
+                },
+                {
+                  "key": "categories",
+                  "value": "[\"Updated\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/backend/services/update.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "services", "update.php"]
+            },
+            "description": "Update an existing service"
+          }
+        },
+        {
+          "name": "POST - Delete Service",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/backend/services/delete.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "services", "delete.php"]
+            },
+            "description": "Delete a service"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. PRODUCTS - CRUD Operations",
+      "item": [
+        {
+          "name": "GET - All Products",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/backend/products/read.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "products", "read.php"]
+            },
+            "description": "Retrieve all products"
+          }
+        },
+        {
+          "name": "POST - Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Product\",\n  \"description\": \"This is a test product\",\n  \"price\": 99.99,\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/backend/products/create.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "products", "create.php"]
+            },
+            "description": "Create a new product"
+          }
+        },
+        {
+          "name": "POST - Update Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"name\": \"Updated Product\",\n  \"description\": \"Updated description\",\n  \"price\": 149.99\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/backend/products/update.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "products", "update.php"]
+            },
+            "description": "Update an existing product"
+          }
+        },
+        {
+          "name": "POST - Delete Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/backend/products/delete.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "products", "delete.php"]
+            },
+            "description": "Delete a product"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. LEADS - CRUD Operations",
+      "item": [
+        {
+          "name": "GET - All Leads",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/backend/leads/get-leads.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "leads", "get-leads.php"]
+            },
+            "description": "Retrieve all leads"
+          }
+        },
+        {
+          "name": "POST - Add Lead",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"company\": \"Test Company\",\n  \"email\": \"john@testcompany.com\",\n  \"category\": \"Enterprise\",\n  \"message\": \"I am interested in your services\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/backend/leads/add-lead.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "leads", "add-lead.php"]
+            },
+            "description": "Create a new lead"
+          }
+        },
+        {
+          "name": "POST - Delete Lead",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/backend/leads/delete-lead.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "leads", "delete-lead.php"]
+            },
+            "description": "Delete a lead"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. DOCUMENTS - Operations",
+      "item": [
+        {
+          "name": "GET - User Documents",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/backend/documents/get-profile.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "documents", "get-profile.php"]
+            },
+            "description": "Get user documents/profile"
+          }
+        },
+        {
+          "name": "POST - Upload Document",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "document",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "user_id",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/backend/documents/upload.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "documents", "upload.php"]
+            },
+            "description": "Upload a document"
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. AUTHENTICATION",
+      "item": [
+        {
+          "name": "POST - Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/backend/auth/login.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "auth", "login.php"]
+            },
+            "description": "User login authentication"
+          }
+        },
+        {
+          "name": "POST - Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"securePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/backend/auth/register.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "auth", "register.php"]
+            },
+            "description": "User registration"
+          }
+        },
+        {
+          "name": "GET - Logout",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/backend/auth/logout.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "auth", "logout.php"]
+            },
+            "description": "User logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. SETTINGS",
+      "item": [
+        {
+          "name": "GET - Site Settings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/backend/settings/get-settings.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "settings", "get-settings.php"]
+            },
+            "description": "Get site settings"
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. INDUSTRIES",
+      "item": [
+        {
+          "name": "GET - Industry Images",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/backend/industries/get-images.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "industries", "get-images.php"]
+            },
+            "description": "Get industries with images"
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. PROMOTERS",
+      "item": [
+        {
+          "name": "GET - All Promoters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/backend/promoters/get-promoters.php",
+              "host": ["{{base_url}}"],
+              "path": ["backend", "promoters", "get-promoters.php"]
+            },
+            "description": "Get all promoters"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost",
+      "type": "string"
+    }
+  ]
+}
