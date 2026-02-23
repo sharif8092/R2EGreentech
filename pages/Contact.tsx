@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Mail, Phone, MapPin, Send, MessageSquare, Clock, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, MessageSquare, Clock, ShieldCheck, MessageCircle } from 'lucide-react';
 
 const Contact: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
   
   // Form States
   const [formData, setFormData] = useState({
@@ -26,39 +23,25 @@ const Contact: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setErrorMsg('');
     
-    try {
-      // Data format jo API ko chahiye
-      const payload = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.company, // Company name sent in phone field for DB structure, or adapt as needed
-        service: formData.category,
-        message: formData.message,
-        company: formData.company
-      };
+    // Yahan apna WhatsApp Number daalein (Country code ke sath, bina + sign ke)
+    const phoneNumber = "919882896642"; 
 
-      const res = await axios.post("https://r2egreentech.in/backend/leads/add-lead.php", payload, {
-        headers: { 'Content-Type': 'application/json' }
-      });
+    // WhatsApp Message ka Format
+    const messageText = `*New Industrial Inquiry (R2E Greentech)* 🏭\n\n*Name:* ${formData.name}\n*Company:* ${formData.company}\n*Email:* ${formData.email}\n*Category:* ${formData.category}\n*Technical Brief:* ${formData.message}`;
 
-      if (res.data.status === 'success') {
-        setSubmitted(true);
-        setFormData({ name: '', company: '', email: '', category: 'HVAC Thermal Audit', message: '' }); // Reset form
-        setTimeout(() => setSubmitted(false), 5000);
-      } else {
-        setErrorMsg(res.data.message || "Failed to submit. Please try again.");
-      }
-    } catch (error) {
-      console.error("Submission Error", error);
-      setErrorMsg("Network error. Please check your connection.");
-    } finally {
-      setLoading(false);
-    }
+    // WhatsApp API URL create karna
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(messageText)}`;
+
+    // Naye tab me WhatsApp open karna
+    window.open(whatsappUrl, '_blank');
+
+    // Form Reset aur Success Message
+    setSubmitted(true);
+    setFormData({ name: '', company: '', email: '', category: 'HVAC Thermal Audit', message: '' }); 
+    setTimeout(() => setSubmitted(false), 5000);
   };
 
   return (
@@ -109,9 +92,9 @@ const Contact: React.FC = () => {
                 <p className="text-slate-500 text-xs mb-6 leading-relaxed font-medium">
                   Expert availability on Tuesdays and Thursdays for deep-dive technical briefs.
                 </p>
-                <button className="w-full py-3 bg-slate-900 text-white rounded-lg font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">
+                <a href="https://wa.me/919882896642?text=Hello,%20I%20would%20like%20to%20check%20expert%20availability%20for%20a%20technical%20consultation." target="_blank" rel="noreferrer" className="w-full py-3 bg-slate-900 text-white rounded-lg font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all flex justify-center">
                   Check Expert Availability
-                </button>
+                </a>
               </div>
 
               <div className="flex items-center p-4 bg-emerald-50 text-emerald-800 rounded-xl border border-emerald-100">
@@ -127,8 +110,8 @@ const Contact: React.FC = () => {
                     <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6">
                       <Send className="w-8 h-8" />
                     </div>
-                    <h3 className="text-2xl font-black text-slate-900 mb-2">Transmission Successful</h3>
-                    <p className="text-slate-500 font-medium">Responding within 24 hours.</p>
+                    <h3 className="text-2xl font-black text-slate-900 mb-2">Redirecting to WhatsApp</h3>
+                    <p className="text-slate-500 font-medium">Your inquiry is ready to send.</p>
                   </div>
                 )}
                 
@@ -136,13 +119,6 @@ const Contact: React.FC = () => {
                   <MessageSquare className="w-6 h-6 mr-3 text-emerald-600" />
                   Industrial Inquiry
                 </h3>
-
-                {errorMsg && (
-                   <div className="mb-6 p-4 bg-red-50 text-red-600 text-xs font-bold rounded-lg flex items-center border border-red-100">
-                      <AlertCircle className="w-4 h-4 mr-2" />
-                      {errorMsg}
-                   </div>
-                )}
 
                 <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                   <div className="grid md:grid-cols-2 gap-4 md:gap-6">
@@ -154,8 +130,7 @@ const Contact: React.FC = () => {
                         value={formData.name}
                         onChange={handleChange}
                         type="text" 
-                        disabled={loading}
-                        className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all disabled:opacity-50" 
+                        className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all" 
                         placeholder="Enter name" 
                       />
                     </div>
@@ -167,8 +142,7 @@ const Contact: React.FC = () => {
                         value={formData.company}
                         onChange={handleChange}
                         type="text" 
-                        disabled={loading}
-                        className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all disabled:opacity-50" 
+                        className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all" 
                         placeholder="Company Name" 
                       />
                     </div>
@@ -182,8 +156,7 @@ const Contact: React.FC = () => {
                         value={formData.email}
                         onChange={handleChange}
                         type="email" 
-                        disabled={loading}
-                        className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all disabled:opacity-50" 
+                        className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all" 
                         placeholder="name@company.com" 
                       />
                     </div>
@@ -193,8 +166,7 @@ const Contact: React.FC = () => {
                         name="category"
                         value={formData.category}
                         onChange={handleChange}
-                        disabled={loading}
-                        className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all disabled:opacity-50"
+                        className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all"
                       >
                         <option>HVAC Thermal Audit</option>
                         <option>EPR & E-Waste Program</option>
@@ -210,17 +182,16 @@ const Contact: React.FC = () => {
                       name="message" 
                       value={formData.message}
                       onChange={handleChange}
-                      disabled={loading}
-                      className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all h-24 disabled:opacity-50" 
+                      className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all h-24" 
                       placeholder="Describe requirements..."
                     ></textarea>
                   </div>
                   <button 
                     type="submit" 
-                    disabled={loading}
-                    className="w-full py-4 bg-emerald-700 text-white rounded-lg font-black text-sm uppercase tracking-widest hover:bg-emerald-800 transition-all shadow-xl shadow-emerald-900/10 disabled:bg-slate-400 disabled:cursor-not-allowed flex justify-center items-center"
+                    className="w-full py-4 bg-[#25D366] text-white rounded-lg font-black text-sm uppercase tracking-widest hover:bg-[#128C7E] transition-all shadow-xl shadow-[#25D366]/20 flex justify-center items-center"
                   >
-                    {loading ? <span className="animate-pulse">Transmitting...</span> : 'Submit Technical Brief'}
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    Send via WhatsApp
                   </button>
                 </form>
               </div>

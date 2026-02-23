@@ -1,42 +1,54 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { ShieldCheck, Lock, User, ArrowRight } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Initialize default admin if no users exist in the system
-    const storedAdmins = localStorage.getItem('r2e_admins');
-    if (!storedAdmins) {
-      const defaultAdmin = [
-        { id: 1, username: 'admin', password: 'admin123', role: 'Super Admin', date: new Date().toISOString() }
-      ];
-      localStorage.setItem('r2e_admins', JSON.stringify(defaultAdmin));
-    }
-    
-    // Check if already logged in
-    if (localStorage.getItem('r2e_auth')) {
+    // Check if already logged in (Valid session)
+    if (localStorage.getItem('r2e_auth') === 'true') {
       navigate('/admin/dashboard');
     }
   }, [navigate]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
     
-    const admins = JSON.parse(localStorage.getItem('r2e_admins') || '[]');
-    const user = admins.find((a: any) => a.username === username && a.password === password);
+    try {
+      // API call to actual PHP backend
+      const res = await axios.post("https://r2egreentech.in/backend/auth/login.php", {
+        username: username,
+        password: password
+      }, {
+        headers: { 'Content-Type': 'application/json' }
+      });
 
-    if (user) {
-      localStorage.setItem('r2e_auth', 'true');
-      localStorage.setItem('r2e_current_user', JSON.stringify(user)); // Store session info
-      navigate('/admin/dashboard');
-    } else {
-      setError('Invalid credentials. Please try again.');
+      if (res.data.status === 'success') {
+        // Secure Session Creation
+        localStorage.setItem('r2e_auth', 'true');
+        localStorage.setItem('r2e_current_user', JSON.stringify({
+            id: res.data.admin.id,
+            username: res.data.admin.username,
+            role: res.data.admin.role || 'Admin'
+        }));
+        
+        navigate('/admin/dashboard');
+      } else {
+        setError(res.data.message || 'Invalid credentials. Please try again.');
+      }
+    } catch (err) {
+      console.error("Login failed:", err);
+      setError('Connection to server failed.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -61,9 +73,11 @@ const Login: React.FC = () => {
               <User className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
               <input 
                 type="text" 
+                required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-emerald-500 transition-colors"
+                disabled={loading}
+                className="w-full bg-slate-950 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-emerald-500 transition-colors disabled:opacity-50"
                 placeholder="Enter ID"
               />
             </div>
@@ -74,28 +88,30 @@ const Login: React.FC = () => {
               <Lock className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
               <input 
                 type="password" 
+                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-emerald-500 transition-colors"
+                disabled={loading}
+                className="w-full bg-slate-950 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-emerald-500 transition-colors disabled:opacity-50"
                 placeholder="Enter Password"
               />
             </div>
           </div>
 
           {error && (
-            <div className="text-red-400 text-xs font-bold text-center bg-red-900/20 py-2 rounded-lg">
+            <div className="text-red-400 text-xs font-bold text-center bg-red-900/20 py-3 rounded-lg border border-red-900/50">
               {error}
             </div>
           )}
 
-          <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-black uppercase tracking-widest flex items-center justify-center group transition-all">
-            Access System
-            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-black uppercase tracking-widest flex items-center justify-center group transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Authenticating...' : 'Access System'}
+            {!loading && <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />}
           </button>
-          
-          <div className="text-center mt-4">
-            <p className="text-[10px] text-slate-600 uppercase tracking-widest">Default: admin / admin123</p>
-          </div>
         </form>
       </div>
     </div>
