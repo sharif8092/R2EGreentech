@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Upload, CheckCircle, AlertCircle, MonitorPlay, Move } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, MonitorPlay, Layers, Factory, Move } from 'lucide-react';
+import { CORE_VERTICALS, INDUSTRIES } from '../../constants';
 
 interface SiteImages {
   [key: string]: string;
@@ -16,7 +17,7 @@ const SiteMedia: React.FC = () => {
   const [images, setImages] = useState<SiteImages>({});
   const [positions, setPositions] = useState<SitePositions>({});
   const [msg, setMsg] = useState({ type: '', text: '' });
-  const [activeTab, setActiveTab] = useState<'home'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'services' | 'industries'>('home');
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -54,10 +55,12 @@ const SiteMedia: React.FC = () => {
     }
   };
 
+  // NAYA UPLOAD LOGIC: Send actual file to server
   const handleUpload = async (key: string, e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       
+      // Increased limit to 2MB for better quality images
       if (file.size > 2 * 1024 * 1024) {
         setMsg({ type: 'error', text: 'Image too large. Please use an image under 2MB.' });
         return;
@@ -84,6 +87,7 @@ const SiteMedia: React.FC = () => {
           setMsg({ type: 'error', text: res.data.message || 'Upload failed on server.' });
         }
       } catch (error) {
+        console.error("Upload error:", error);
         setMsg({ type: 'error', text: 'Network error while uploading.' });
       } finally {
         setUploading(false);
@@ -122,6 +126,7 @@ const SiteMedia: React.FC = () => {
             className="w-full h-full object-cover transition-all duration-200"
             style={{ objectPosition: currentPos }} 
           />
+          <div className="absolute inset-0 border-2 border-emerald-500/0 group-hover:border-emerald-500/20 transition-all pointer-events-none rounded-xl"></div>
         </div>
 
         <div className="bg-slate-50 p-3 rounded-lg mb-4 border border-slate-100">
@@ -131,20 +136,24 @@ const SiteMedia: React.FC = () => {
           <div className="space-y-2">
              <div>
                 <div className="flex justify-between text-[9px] font-bold text-slate-400 mb-1">
-                  <span>Horizontal (X)</span><span>{isNaN(posX) ? 50 : posX}%</span>
+                  <span>Horizontal (X)</span>
+                  <span>{isNaN(posX) ? 50 : posX}%</span>
                 </div>
                 <input 
-                  type="range" min="0" max="100" value={isNaN(posX) ? 50 : posX} 
+                  type="range" min="0" max="100" 
+                  value={isNaN(posX) ? 50 : posX} 
                   onChange={(e) => handlePositionChange(key, 'x', Number(e.target.value))}
                   className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
                 />
              </div>
              <div>
                 <div className="flex justify-between text-[9px] font-bold text-slate-400 mb-1">
-                  <span>Vertical (Y)</span><span>{isNaN(posY) ? 50 : posY}%</span>
+                  <span>Vertical (Y)</span>
+                  <span>{isNaN(posY) ? 50 : posY}%</span>
                 </div>
                 <input 
-                  type="range" min="0" max="100" value={isNaN(posY) ? 50 : posY} 
+                  type="range" min="0" max="100" 
+                  value={isNaN(posY) ? 50 : posY} 
                   onChange={(e) => handlePositionChange(key, 'y', Number(e.target.value))}
                   className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
                 />
@@ -152,7 +161,7 @@ const SiteMedia: React.FC = () => {
           </div>
         </div>
 
-        <label className="flex items-center justify-center w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-colors cursor-pointer disabled:opacity-50">
+        <label className="flex items-center justify-center w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition-colors cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
           <Upload className="w-4 h-4 mr-2" />
           {uploading ? 'Uploading...' : 'Replace Image'}
           <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload(key, e)} disabled={uploading} />
@@ -165,7 +174,7 @@ const SiteMedia: React.FC = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Site Images</h1>
-        <p className="text-slate-500 font-medium text-sm">Control visual assets for static pages (Home, Hero sections).</p>
+        <p className="text-slate-500 font-medium text-sm">Control visual assets and their focal points directly from database.</p>
       </div>
 
       {msg.text && (
@@ -176,13 +185,22 @@ const SiteMedia: React.FC = () => {
       )}
 
       <div className="flex space-x-2 border-b border-slate-200 overflow-x-auto pb-1">
-        {[ { id: 'home', icon: MonitorPlay, label: 'Home Page Layout' } ].map((tab) => (
+        {[
+          { id: 'home', icon: MonitorPlay, label: 'Home Page' },
+          { id: 'services', icon: Layers, label: 'Services Page' },
+          { id: 'industries', icon: Factory, label: 'Industries Page' }
+        ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center px-4 py-3 text-xs font-black uppercase tracking-widest border-b-2 border-emerald-500 text-emerald-600 bg-emerald-50/50 rounded-t-lg`}
+            className={`flex items-center px-4 py-3 text-xs font-black uppercase tracking-widest whitespace-nowrap transition-colors border-b-2 ${
+              activeTab === tab.id 
+              ? 'border-emerald-500 text-emerald-600 bg-emerald-50/50 rounded-t-lg' 
+              : 'border-transparent text-slate-400 hover:text-slate-600'
+            }`}
           >
-            <tab.icon className="w-4 h-4 mr-2" /> {tab.label}
+            <tab.icon className="w-4 h-4 mr-2" />
+            {tab.label}
           </button>
         ))}
       </div>
@@ -190,10 +208,18 @@ const SiteMedia: React.FC = () => {
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
         {activeTab === 'home' && (
           <>
-            {renderUploadControl('home_hero', 'Home Hero Background', 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2400')}
+            {renderUploadControl('home_hero', 'Hero Section Background', 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2400')}
             {renderUploadControl('home_why_choose', 'Why Choose Us Image', 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1000')}
           </>
         )}
+
+        {activeTab === 'services' && CORE_VERTICALS.map((service) => (
+           renderUploadControl(`service_${service.id}`, `${service.title} Image`, service.image)
+        ))}
+
+        {activeTab === 'industries' && INDUSTRIES.map((ind) => (
+           renderUploadControl(`industry_${ind.id}`, `${ind.name} Image`, ind.image)
+        ))}
       </div>
     </div>
   );
