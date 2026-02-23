@@ -1,15 +1,16 @@
 <?php
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
-require_once("../config/database.php");
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(["status" => "error", "message" => "Invalid request method"]);
-    exit;
+// Handle CORS Preflight request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
 }
+
+require_once("../config/database.php");
 
 $id = $_POST['id'] ?? '';
 $slug = $_POST['slug'] ?? '';
@@ -23,34 +24,35 @@ if (empty($id)) {
     exit;
 }
 
-// Get old image
+// Fetch existing image
 $oldQuery = $conn->prepare("SELECT image FROM services WHERE id = ?");
 $oldQuery->bind_param("i", $id);
 $oldQuery->execute();
-$result = $oldQuery->get_result();
-$row = $result->fetch_assoc();
+$row = $oldQuery->get_result()->fetch_assoc();
 $oldImage = $row['image'] ?? '';
 $oldQuery->close();
 
-$imagePath = $oldImage;
+$imagePath = $oldImage; // Default to old image
 
-// Handle new image upload
 if (!empty($_FILES['image']['name'])) {
-
     $uploadDir = "../uploads/";
     if (!file_exists($uploadDir)) {
         mkdir($uploadDir, 0777, true);
     }
 
-    $fileName = time() . "_" . basename($_FILES["image"]["name"]);
+    $fileName = time() . "_" . preg_replace("/[^a-zA-Z0-9.]/", "", basename($_FILES["image"]["name"]));
     $targetFile = $uploadDir . $fileName;
 
     if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-        $imagePath = "backend/uploads/" . $fileName;
+        $imagePath = "https://r2egreentech.in/backend/uploads/" . $fileName;
 
-        // Delete old image
-        if (!empty($oldImage) && file_exists("../" . $oldImage)) {
-            unlink("../" . $oldImage);
+        // Delete old image properly
+        if (!empty($oldImage)) {
+            $oldFileName = basename($oldImage); 
+            $oldFilePath = "../uploads/" . $oldFileName;
+            if (file_exists($oldFilePath)) {
+                unlink($oldFilePath);
+            }
         }
     } else {
         echo json_encode(["status" => "error", "message" => "Image upload failed"]);
@@ -69,3 +71,4 @@ if ($stmt->execute()) {
 
 $stmt->close();
 $conn->close();
+?>

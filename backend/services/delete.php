@@ -1,41 +1,44 @@
 <?php
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
-require_once("../config/database.php");
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(["status" => "error", "message" => "Invalid request method"]);
-    exit;
+// Handle CORS Preflight request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
 }
 
-$id = $_POST['id'] ?? '';
+require_once("../config/database.php");
+
+// Allow both raw JSON body and FormData
+$data = json_decode(file_get_contents("php://input"));
+$id = $_POST['id'] ?? ($data->id ?? '');
 
 if (empty($id)) {
     echo json_encode(["status" => "error", "message" => "Service ID required"]);
     exit;
 }
 
-// Get image before delete
 $query = $conn->prepare("SELECT image FROM services WHERE id=?");
 $query->bind_param("i", $id);
 $query->execute();
-$result = $query->get_result();
-$row = $result->fetch_assoc();
+$row = $query->get_result()->fetch_assoc();
 $image = $row['image'] ?? '';
 $query->close();
 
-// Delete record
 $stmt = $conn->prepare("DELETE FROM services WHERE id=?");
 $stmt->bind_param("i", $id);
 
 if ($stmt->execute()) {
-
-    // Delete image file
-    if (!empty($image) && file_exists("../" . $image)) {
-        unlink("../" . $image);
+    // Correctly extract filename and delete from server
+    if (!empty($image)) {
+        $fileName = basename($image); 
+        $filePath = "../uploads/" . $fileName;
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
     }
 
     echo json_encode(["status" => "success", "message" => "Service deleted"]);
@@ -45,3 +48,4 @@ if ($stmt->execute()) {
 
 $stmt->close();
 $conn->close();
+?>
