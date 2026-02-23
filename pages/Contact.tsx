@@ -1,67 +1,61 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Mail, Phone, MapPin, Send, MessageSquare, Clock, ShieldCheck } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Mail, Phone, MapPin, Send, MessageSquare, Clock, ShieldCheck, AlertCircle } from 'lucide-react';
 
 const Contact: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [errorMsg, setErrorMsg] = useState('');
+  
+  // Form States
   const [formData, setFormData] = useState({
-    name: "",
-    company: "",
-    email: "",
-    category: "HVAC Thermal Audit",
-    message: "",
+    name: '',
+    company: '',
+    email: '',
+    category: 'HVAC Thermal Audit',
+    message: ''
   });
 
   useEffect(() => {
     document.title = "Contact Us | Request Technical Audit | R2E Greentech";
     const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc)
-      metaDesc.setAttribute(
-        "content",
-        "Connect with our engineering hub in New Delhi. Schedule site visits or consult with our promoters."
-      );
+    if (metaDesc) metaDesc.setAttribute("content", "Connect with our engineering hub in New Delhi. Schedule site visits or consult with our promoters.");
   }, []);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    setErrorMsg('');
+    
     try {
-      const response = await axios.post(
-        "https://r2egreentech.in/backend/leads/add-lead.php",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      // Data format jo API ko chahiye
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.company, // Company name sent in phone field for DB structure, or adapt as needed
+        service: formData.category,
+        message: formData.message,
+        company: formData.company
+      };
 
-      if (response.data.status === "success") {
+      const res = await axios.post("https://r2egreentech.in/backend/leads/add-lead.php", payload, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (res.data.status === 'success') {
         setSubmitted(true);
-        setFormData({
-          name: "",
-          company: "",
-          email: "",
-          category: "HVAC Thermal Audit",
-          message: "",
-        });
-
+        setFormData({ name: '', company: '', email: '', category: 'HVAC Thermal Audit', message: '' }); // Reset form
         setTimeout(() => setSubmitted(false), 5000);
       } else {
-        alert("Submission failed. Please try again.");
+        setErrorMsg(res.data.message || "Failed to submit. Please try again.");
       }
     } catch (error) {
-      console.error("Submission Error:", error);
-      alert("Server error. Please try later.");
+      console.error("Submission Error", error);
+      setErrorMsg("Network error. Please check your connection.");
     } finally {
       setLoading(false);
     }
@@ -69,138 +63,168 @@ const Contact: React.FC = () => {
 
   return (
     <div className="pt-20 pb-16 bg-slate-50">
-      <section className="py-16 bg-slate-900 text-white">
-        <div className="max-w-[1440px] mx-auto px-4">
-          <h1 className="text-4xl font-black mb-4 uppercase tracking-tighter">
-            Engineer Your <span className="text-emerald-500">Net-Zero Future</span>
-          </h1>
-          <p className="text-lg text-slate-400">
-            Request a technical site audit or speak with our promoters.
-          </p>
+      <section className="py-16 md:py-16 bg-slate-900 text-white">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <h1 className="text-3xl md:text-5xl font-black mb-4 uppercase tracking-tighter">Engineer Your <span className="text-emerald-500">Net-Zero Future</span></h1>
+            <p className="text-base md:text-lg text-slate-400 font-medium leading-relaxed">Request a technical site audit or speak with our promoters regarding your industrial decarbonization strategy.</p>
+          </div>
         </div>
       </section>
 
-      <section className="py-16">
-        <div className="max-w-[1440px] mx-auto px-4">
-          <div className="grid lg:grid-cols-12 gap-12">
-
-            {/* LEFT INFO PANEL */}
-            <div className="lg:col-span-5 space-y-8">
-              <h3 className="text-xl font-bold text-slate-900 uppercase">
-                Engineering Hub
-              </h3>
-
-              {[
-                { icon: <Phone />, value: "+91 98828 96642", href: "tel:+919882896642" },
-                { icon: <Mail />, value: "info@r2egreentech.com", href: "mailto:info@r2egreentech.com" },
-                { icon: <MapPin />, value: "Plot 7, Sector 10 Dwarka, New Delhi", href: null },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center space-x-3">
-                  {item.icon}
-                  {item.href ? (
-                    <a href={item.href} className="text-slate-900 font-semibold">
-                      {item.value}
-                    </a>
-                  ) : (
-                    <p className="text-slate-900 font-semibold">{item.value}</p>
-                  )}
+      <section className="py-12 md:py-16">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-12 gap-10 md:gap-12">
+            <div className="lg:col-span-5 space-y-6 md:space-y-8 order-2 lg:order-1">
+              <div>
+                <h3 className="text-lg md:text-xl font-black text-slate-900 mb-6 uppercase tracking-widest">Engineering Hub</h3>
+                <div className="space-y-4 md:space-y-6">
+                   {[
+                     { icon: <Phone />, label: "Direct Line", value: "+91 98828 96642", href: "tel:+919882896642" },
+                     { icon: <Mail />, label: "Inquiry Desk", value: "info@r2egreentech.com", href: "mailto:info@r2egreentech.com" },
+                     { icon: <MapPin />, label: "Registered Office", value: "Plot 7, Sector 10 Dwarka, New Delhi, India-110075", href: null }
+                   ].map((item, i) => (
+                     <div key={i} className="flex items-start space-x-4 group">
+                        <div className="p-3 bg-white shadow-sm rounded-xl text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all shrink-0">
+                          {React.cloneElement(item.icon as React.ReactElement<any>, { className: "w-5 h-5" })}
+                        </div>
+                        <div>
+                          <p className="text-[9px] text-slate-400 uppercase font-black tracking-[0.2em] mb-0.5">{item.label}</p>
+                          {item.href ? (
+                            <a href={item.href} className="text-sm md:text-base font-bold text-slate-900 hover:text-emerald-600 transition-colors break-all md:break-normal">{item.value}</a>
+                          ) : (
+                            <p className="text-sm md:text-base font-bold text-slate-900">{item.value}</p>
+                          )}
+                        </div>
+                     </div>
+                   ))}
                 </div>
-              ))}
-
-              <div className="p-6 bg-white rounded-xl shadow">
-                <Clock className="text-emerald-600 mb-3" />
-                <p className="text-sm text-slate-600">
-                  Expert availability on Tuesdays & Thursdays.
-                </p>
               </div>
 
-              <div className="flex items-center p-4 bg-emerald-50 rounded-xl">
-                <ShieldCheck className="text-emerald-600 mr-2" />
-                <span className="text-sm font-semibold text-emerald-800">
-                  Secure Industrial Protocol Active
-                </span>
+              <div className="p-6 md:p-8 bg-white rounded-3xl shadow-sm border border-slate-100">
+                <h4 className="text-base md:text-lg font-bold mb-3 flex items-center text-slate-900">
+                  <Clock className="w-5 h-5 mr-3 text-emerald-600" />
+                  Technical Consultation
+                </h4>
+                <p className="text-slate-500 text-xs mb-6 leading-relaxed font-medium">
+                  Expert availability on Tuesdays and Thursdays for deep-dive technical briefs.
+                </p>
+                <button className="w-full py-3 bg-slate-900 text-white rounded-lg font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all">
+                  Check Expert Availability
+                </button>
+              </div>
+
+              <div className="flex items-center p-4 bg-emerald-50 text-emerald-800 rounded-xl border border-emerald-100">
+                 <ShieldCheck className="w-5 h-5 mr-3 shrink-0" />
+                 <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest">Secure Industrial Protocol Active</span>
               </div>
             </div>
 
-            {/* RIGHT FORM PANEL */}
-            <div className="lg:col-span-7">
-              <div className="bg-white p-10 rounded-3xl shadow-xl relative">
-
+            <div className="lg:col-span-7 order-1 lg:order-2">
+              <div className="bg-white p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl border border-slate-100 relative overflow-hidden">
                 {submitted && (
-                  <div className="absolute inset-0 bg-white flex flex-col items-center justify-center z-10">
-                    <Send className="text-emerald-600 w-10 h-10 mb-3" />
-                    <h3 className="text-xl font-bold">Submission Successful</h3>
-                    <p className="text-slate-500">We will respond within 24 hours.</p>
+                  <div className="absolute inset-0 bg-white/95 rounded-3xl flex flex-col items-center justify-center text-center p-8 z-20 animate-in fade-in duration-300">
+                    <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6">
+                      <Send className="w-8 h-8" />
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-900 mb-2">Transmission Successful</h3>
+                    <p className="text-slate-500 font-medium">Responding within 24 hours.</p>
                   </div>
                 )}
-
-                <h3 className="text-2xl font-bold mb-6 flex items-center">
-                  <MessageSquare className="mr-2 text-emerald-600" />
+                
+                <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-6 md:mb-8 flex items-center tracking-tight uppercase tracking-[0.1em]">
+                  <MessageSquare className="w-6 h-6 mr-3 text-emerald-600" />
                   Industrial Inquiry
                 </h3>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <input
-                    required
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Full Name"
-                    className="w-full p-3 border rounded-lg"
-                  />
+                {errorMsg && (
+                   <div className="mb-6 p-4 bg-red-50 text-red-600 text-xs font-bold rounded-lg flex items-center border border-red-100">
+                      <AlertCircle className="w-4 h-4 mr-2" />
+                      {errorMsg}
+                   </div>
+                )}
 
-                  <input
-                    required
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    placeholder="Company"
-                    className="w-full p-3 border rounded-lg"
-                  />
-
-                  <input
-                    required
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Work Email"
-                    className="w-full p-3 border rounded-lg"
-                  />
-
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    className="w-full p-3 border rounded-lg"
-                  >
-                    <option>HVAC Thermal Audit</option>
-                    <option>EPR & E-Waste Program</option>
-                    <option>Solar Thermal Installation</option>
-                    <option>Process Engineering</option>
-                  </select>
-
-                  <textarea
-                    required
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder="Describe requirements..."
-                    className="w-full p-3 border rounded-lg h-28"
-                  ></textarea>
-
-                  <button
-                    type="submit"
+                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+                  <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+                    <div>
+                      <label className="block text-[9px] uppercase font-black text-slate-400 mb-1.5 tracking-widest">Full Name</label>
+                      <input 
+                        required 
+                        name="name" 
+                        value={formData.name}
+                        onChange={handleChange}
+                        type="text" 
+                        disabled={loading}
+                        className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all disabled:opacity-50" 
+                        placeholder="Enter name" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] uppercase font-black text-slate-400 mb-1.5 tracking-widest">Company / Entity</label>
+                      <input 
+                        required 
+                        name="company" 
+                        value={formData.company}
+                        onChange={handleChange}
+                        type="text" 
+                        disabled={loading}
+                        className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all disabled:opacity-50" 
+                        placeholder="Company Name" 
+                      />
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+                    <div>
+                      <label className="block text-[9px] uppercase font-black text-slate-400 mb-1.5 tracking-widest">Work Email</label>
+                      <input 
+                        required 
+                        name="email" 
+                        value={formData.email}
+                        onChange={handleChange}
+                        type="email" 
+                        disabled={loading}
+                        className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all disabled:opacity-50" 
+                        placeholder="name@company.com" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] uppercase font-black text-slate-400 mb-1.5 tracking-widest">Requirement Category</label>
+                      <select 
+                        name="category"
+                        value={formData.category}
+                        onChange={handleChange}
+                        disabled={loading}
+                        className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all disabled:opacity-50"
+                      >
+                        <option>HVAC Thermal Audit</option>
+                        <option>EPR & E-Waste Program</option>
+                        <option>Solar Thermal Installation</option>
+                        <option>Process Engineering</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[9px] uppercase font-black text-slate-400 mb-1.5 tracking-widest">Technical Brief</label>
+                    <textarea 
+                      required 
+                      name="message" 
+                      value={formData.message}
+                      onChange={handleChange}
+                      disabled={loading}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-100 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 transition-all h-24 disabled:opacity-50" 
+                      placeholder="Describe requirements..."
+                    ></textarea>
+                  </div>
+                  <button 
+                    type="submit" 
                     disabled={loading}
-                    className="w-full py-4 bg-emerald-700 text-white rounded-lg font-bold hover:bg-emerald-800 transition"
+                    className="w-full py-4 bg-emerald-700 text-white rounded-lg font-black text-sm uppercase tracking-widest hover:bg-emerald-800 transition-all shadow-xl shadow-emerald-900/10 disabled:bg-slate-400 disabled:cursor-not-allowed flex justify-center items-center"
                   >
-                    {loading ? "Submitting..." : "Submit Technical Brief"}
+                    {loading ? <span className="animate-pulse">Transmitting...</span> : 'Submit Technical Brief'}
                   </button>
                 </form>
-
               </div>
             </div>
-
           </div>
         </div>
       </section>
