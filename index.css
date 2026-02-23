@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* index.css */
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, h4, .font-heading {
+    font-family: 'Lexend', sans-serif;
+}
+
+.scroll-smooth {
+    scroll-behavior: smooth;
+}
+
+@keyframes spin-slow {
+  from { transform: translate(50px, 50px) rotate(0deg); }
+  to { transform: translate(50px, 50px) rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.35; transform: scale(1.05); }
+  50% { opacity: 0.45; transform: scale(1.1); }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 15s ease-in-out infinite;
+}
