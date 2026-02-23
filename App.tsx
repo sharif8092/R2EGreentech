@@ -1,4 +1,3 @@
-
 import React, { Suspense, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -16,7 +15,7 @@ const Download = React.lazy(() => import('./pages/Download'));
 const AdminLogin = React.lazy(() => import('./pages/admin/Login'));
 const AdminLayout = React.lazy(() => import('./pages/admin/AdminLayout'));
 const Dashboard = React.lazy(() => import('./pages/admin/Dashboard'));
-// const AdminServices = React.lazy(() => import('./pages/admin/AdminServices'));
+const AdminServices = React.lazy(() => import('./pages/admin/AdminServices'));
 const AdminIndustries = React.lazy(() => import('./pages/admin/AdminIndustries'));
 const Leads = React.lazy(() => import('./pages/admin/Leads'));
 const Documents = React.lazy(() => import('./pages/admin/Documents'));
@@ -61,6 +60,8 @@ const App: React.FC = () => {
             <Route path="/admin" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route path="dashboard" element={<Dashboard />} />
+              <Route path="services" element={<AdminServices />} />
+              <Route path="industries" element={<AdminIndustries />} />
               <Route path="leads" element={<Leads />} />
               <Route path="documents" element={<Documents />} />
               <Route path="promoters" element={<Promoters />} />
