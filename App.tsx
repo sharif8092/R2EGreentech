@@ -16,6 +16,8 @@ const Download = React.lazy(() => import('./pages/Download'));
 const AdminLogin = React.lazy(() => import('./pages/admin/Login'));
 const AdminLayout = React.lazy(() => import('./pages/admin/AdminLayout'));
 const Dashboard = React.lazy(() => import('./pages/admin/Dashboard'));
+const AdminServices = React.lazy(() => import('./pages/admin/AdminServices'));
+const AdminIndustries = React.lazy(() => import('./pages/admin/AdminIndustries'));
 const Leads = React.lazy(() => import('./pages/admin/Leads'));
 const Documents = React.lazy(() => import('./pages/admin/Documents'));
 const Settings = React.lazy(() => import('./pages/admin/Settings'));
